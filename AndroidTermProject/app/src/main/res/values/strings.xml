@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Swiping_Break_Bricks</string>
+    <string name="immediate_switch_text">Apply Immediately</string>
 </resources>
