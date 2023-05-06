@@ -14,7 +14,7 @@ public class Ball {
         this.dx = dx/3;
         this.dy = dy/3;
         //ball의 크기
-        dstRect.set(0, 0, 2.0f, 2.0f);
+        dstRect.set(0, 0, 0.5f, 0.5f);
     }
 
     public static void setBitmap(Bitmap bitmap) {
