@@ -16,7 +16,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-
+import android.widget.Toast;
 import java.util.ArrayList;
 
 public class GameView extends View {
@@ -99,8 +99,12 @@ public class GameView extends View {
                     deltaY = deltaY * (maxDragDistance / currentDragDistance);
                 }
 
-                ballVelocity.set(-deltaX / 10, -deltaY / 10);
-                ballIsMoving = true;
+                if (deltaY < 0) {
+                    Toast.makeText(getContext(), "공을 아래로 발사할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    ballVelocity.set(-deltaX / 10, -deltaY / 10);
+                    ballIsMoving = true;
+                }
                 drawArrow = false;
                 break;
         }
