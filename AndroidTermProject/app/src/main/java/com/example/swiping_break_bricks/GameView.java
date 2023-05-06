@@ -89,6 +89,16 @@ public class GameView extends View {
             case MotionEvent.ACTION_UP:
                 float deltaX = event.getX() - initialTouch.x;
                 float deltaY = event.getY() - initialTouch.y;
+
+                // 드래그로 증가하는속도를 제한
+                float maxDragDistance = 100.0f;
+                float currentDragDistance = (float) Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+
+                if (currentDragDistance > maxDragDistance) {
+                    deltaX = deltaX * (maxDragDistance / currentDragDistance);
+                    deltaY = deltaY * (maxDragDistance / currentDragDistance);
+                }
+
                 ballVelocity.set(-deltaX / 10, -deltaY / 10);
                 ballIsMoving = true;
                 drawArrow = false;
