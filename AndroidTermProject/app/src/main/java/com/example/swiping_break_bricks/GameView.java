@@ -35,6 +35,7 @@ class Brick {
 
 public class GameView extends View {
     public static Resources res;
+    private Paint paint;
     private Bitmap ballBitmap;
     private Bitmap brickBitmap;
     private PointF ballPosition;
@@ -73,12 +74,12 @@ public class GameView extends View {
 
         //벽돌
         bricks = new ArrayList<Brick>();
-        int brickWidth = screenWidth / 10;
-        int brickHeight = screenHeight / 20;
+        int brickWidth = screenWidth / 6;  //한줄의 벽돌의개수
+        int brickHeight = screenHeight / 10;
         Random random = new Random();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 6; i++) {
             RectF brickRect = new RectF(i * brickWidth, 0, (i + 1) * brickWidth, brickHeight);
-            int health = random.nextInt(100) + 1;
+            int health = random.nextInt(10) + 1;
             bricks.add(new Brick(brickRect, health));
         }
 
@@ -87,6 +88,11 @@ public class GameView extends View {
         arrowPaint.setColor(Color.RED);
         arrowPaint.setColor(Color.RED);
         arrowPaint.setStrokeWidth(5);
+
+        //벽돌의체력을 텍스트로
+        paint = new Paint();
+        paint.setTextSize(brickHeight * 0.5f);
+        paint.setTextAlign(Paint.Align.CENTER);
 
     }
 
@@ -133,7 +139,7 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Paint paint = new Paint();
+
         canvas.drawColor(Color.WHITE);
 
         canvas.drawBitmap(ballBitmap, ballPosition.x - ballBitmap.getWidth() / 2, ballPosition.y - ballBitmap.getHeight() / 2, paint);
@@ -141,6 +147,7 @@ public class GameView extends View {
         //벽돌비트맵
         for (Brick brick : bricks) {
             canvas.drawBitmap(brickBitmap, null, brick.rect, paint);
+            canvas.drawText(String.valueOf(brick.health), brick.rect.centerX(), brick.rect.centerY() + (paint.getTextSize() / 2), paint);
         }
 
 
@@ -177,6 +184,7 @@ public class GameView extends View {
                     break;
                 }
             }
+
 
             if (ballPosition.y >= screenHeight) {
                 ballIsMoving = false;
