@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Picture;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -17,7 +16,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import java.util.ArrayList;
+import java.util.Random;
+
+
+//벽돌을 클래스로 생성
+class Brick {
+    RectF rect;
+    int health;
+
+    Brick(RectF rect, int health) {
+        this.rect = rect;
+        this.health = health;
+    }
+}
+
 
 public class GameView extends View {
     public static Resources res;
@@ -32,11 +46,10 @@ public class GameView extends View {
     private PointF currentTouch = new PointF();
     private Paint arrowPaint;
 
-    private ArrayList<RectF> bricks;
+    private ArrayList<Brick> bricks;
     private boolean ballIsMoving = false;
     private float initialTouchX, initialTouchY;
     private int screenWidth, screenHeight;
-
 
 
     public GameView(Context context) {
@@ -59,21 +72,25 @@ public class GameView extends View {
         ballVelocity = new PointF(0, 0);
 
         //벽돌
-        bricks = new ArrayList<>();
+        bricks = new ArrayList<Brick>();
         int brickWidth = screenWidth / 10;
         int brickHeight = screenHeight / 20;
+        Random random = new Random();
         for (int i = 0; i < 10; i++) {
-            RectF brick = new RectF(i * brickWidth, 0, (i + 1) * brickWidth, brickHeight);
-            bricks.add(brick);
-
-            //드래그화살표
-            arrowPaint = new Paint();
-            arrowPaint.setColor(Color.RED);
-            arrowPaint.setColor(Color.RED);
-            arrowPaint.setStrokeWidth(5);
-
+            RectF brickRect = new RectF(i * brickWidth, 0, (i + 1) * brickWidth, brickHeight);
+            int health = random.nextInt(100) + 1;
+            bricks.add(new Brick(brickRect, health));
         }
+
+        //드래그화살표
+        arrowPaint = new Paint();
+        arrowPaint.setColor(Color.RED);
+        arrowPaint.setColor(Color.RED);
+        arrowPaint.setStrokeWidth(5);
+
     }
+
+
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -121,8 +138,9 @@ public class GameView extends View {
 
         canvas.drawBitmap(ballBitmap, ballPosition.x - ballBitmap.getWidth() / 2, ballPosition.y - ballBitmap.getHeight() / 2, paint);
 
-        for (RectF brick : bricks) {
-            canvas.drawBitmap(brickBitmap, null, brick, paint);
+        //벽돌비트맵
+        for (Brick brick : bricks) {
+            canvas.drawBitmap(brickBitmap, null, brick.rect, paint);
         }
 
 
@@ -148,10 +166,13 @@ public class GameView extends View {
                 ballPosition.y = ballBitmap.getHeight() / 2; // 상단 벽 밖으로 벗어나지 않도록
             }
 
-
+            //벽돌,공 충돌처리
             for (int i = 0; i < bricks.size(); i++) {
-                if (RectF.intersects(bricks.get(i), new RectF(ballPosition.x - ballBitmap.getWidth() / 2, ballPosition.y - ballBitmap.getHeight() / 2, ballPosition.x + ballBitmap.getWidth() / 2, ballPosition.y + ballBitmap.getHeight() / 2))) {
-                    bricks.remove(i);
+                if (RectF.intersects(bricks.get(i).rect, new RectF(ballPosition.x - ballBitmap.getWidth() / 2, ballPosition.y - ballBitmap.getHeight() / 2, ballPosition.x + ballBitmap.getWidth() / 2, ballPosition.y + ballBitmap.getHeight() / 2))) {
+                    bricks.get(i).health -= 1;
+                    if (bricks.get(i).health == 0) {
+                        bricks.remove(i);
+                    }
                     ballVelocity.y *= -1;
                     break;
                 }
@@ -160,10 +181,6 @@ public class GameView extends View {
             if (ballPosition.y >= screenHeight) {
                 ballIsMoving = false;
                 ballPosition.set(screenWidth / 2.0f, screenHeight * 3.0f / 4.0f);
-
-
-
-
 
             }
         }
