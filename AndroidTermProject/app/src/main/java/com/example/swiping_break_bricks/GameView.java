@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
+import android.util.Log;
 
 
 //벽돌을 클래스로 생성,벽돌의 정보를 저장함
@@ -51,10 +52,14 @@ public class GameView extends View {
     private boolean ballIsMoving = false;
     private float initialTouchX, initialTouchY;
     private int screenWidth, screenHeight;
+    private Item item;
+
+    private int itemCount = 0; // 아이템 먹은 횟수
 
 
     public GameView(Context context) {
         super(context);
+
 
         //화면크기
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -63,6 +68,7 @@ public class GameView extends View {
         display.getSize(size);
         screenWidth = size.x;
         screenHeight = size.y;
+
 
         //공의 이미지와 위치
         int ballSize = Math.min(screenWidth, screenHeight) / 15;
@@ -83,16 +89,29 @@ public class GameView extends View {
             bricks.add(new Brick(brickRect, health));
         }
 
+
         //드래그 화살표
         arrowPaint = new Paint();
         arrowPaint.setColor(Color.RED);
         arrowPaint.setColor(Color.RED);
         arrowPaint.setStrokeWidth(5);
 
+        // 아이템 생성
+        int maxItems = 5; // 최대 아이템 개수
+        float brickTop = brickHeight; // 벽돌이 생성되는 맨 위쪽 좌표
+        float ballBottom = screenHeight * 3.0f / 4.0f - ballSize / 2; // 공이 생성되는 맨 아래쪽 좌표
+        Bitmap itemBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bluejam);
+        item = new Item(new RectF(), itemBitmap, screenWidth, screenHeight, brickHeight, ballPosition.y);
+        item.createItems(maxItems);
+
+
         //벽돌의체력을 텍스트로
         paint = new Paint();
         paint.setTextSize(brickHeight * 0.5f);
         paint.setTextAlign(Paint.Align.CENTER);
+
+
+
 
     }
 
@@ -130,7 +149,11 @@ public class GameView extends View {
                 } else {
                     ballVelocity.set(-deltaX / 10, -deltaY / 10);
                     ballIsMoving = true;
+
                 }
+
+
+
                 drawArrow = false;
                 break;
         }
@@ -147,11 +170,14 @@ public class GameView extends View {
         //공 비트맵으로그리기
         canvas.drawBitmap(ballBitmap, ballPosition.x - ballBitmap.getWidth() / 2, ballPosition.y - ballBitmap.getHeight() / 2, paint);
 
+
+
         //벽돌비트맵,체력표시
         for (Brick brick : bricks) {
             canvas.drawBitmap(brickBitmap, null, brick.rect, paint);
             canvas.drawText(String.valueOf(brick.health), brick.rect.centerX(), brick.rect.centerY() + (paint.getTextSize() / 2), paint);
         }
+
 
 
         //화살표, 드래그중에만그려짐
@@ -160,12 +186,29 @@ public class GameView extends View {
             canvas.drawCircle(initialTouch.x, initialTouch.y, 10, arrowPaint);
             canvas.drawCircle(currentTouch.x, currentTouch.y, 10, arrowPaint);
         }
+
+       item.draw(canvas);
         //공의 움직임임
        if (ballIsMoving) {
             ballPosition.x += ballVelocity.x;
             ballPosition.y += ballVelocity.y;
 
-            //공이 왼쪽, 오른쪽 벽에 닿았을때
+           // 아이템 업데이트
+           item.update(new RectF(ballPosition.x - ballBitmap.getWidth() / 2, ballPosition.y - ballBitmap.getHeight() / 2, ballPosition.x + ballBitmap.getWidth() / 2, ballPosition.y + ballBitmap.getHeight() / 2));
+
+            // 아이템을 먹었을 경우 아이템 먹은 횟수 증가
+           if (item.isEaten()) {
+               itemCount++;
+               item.setEaten(false); // 아이템 먹은 상태 초기화
+               Log.d("Item", "ItemCount: " + itemCount); // 로깅 추가
+           }
+
+            // 아이템을 그리기 전에 아이템 상태 업데이트
+           item.draw(canvas);
+
+
+
+           //공이 왼쪽, 오른쪽 벽에 닿았을때
             if (ballPosition.x - ballBitmap.getWidth() / 2 <= 0 || ballPosition.x + ballBitmap.getWidth() / 2 >= screenWidth) {
                 ballVelocity.x *= -1; //x축의 속도반전
                 ballPosition.x = Math.max(ballPosition.x, ballBitmap.getWidth() / 2); // 왼쪽 벽 밖으로 벗어나지 않도록
@@ -189,13 +232,24 @@ public class GameView extends View {
                 }
             }
 
-            //공이 화면아래로 떨어졌을때
+
+
+           //공이 화면아래로 떨어졌을때
             if (ballPosition.y >= screenHeight) {
                 ballIsMoving = false;
                 ballPosition.set(screenWidth / 2.0f, screenHeight * 3.0f / 4.0f); //공의위치를 대기위치로
 
             }
+
         }
+        // 아이템 먹은 횟수 표시
+        String itemCountText = "Item Count: " + itemCount;
+        float textX = canvas.getWidth() - paint.measureText(itemCountText) - 16; // 텍스트를 오른쪽 아래에 위치시키기 위한 X 좌표 계산
+        float textY = canvas.getHeight() - 16; // 텍스트를 오른쪽 아래에 위치시키기 위한 Y 좌표 계산
+        canvas.drawText(itemCountText, textX, textY, paint);
+
         invalidate();
     }
+
+
 }
