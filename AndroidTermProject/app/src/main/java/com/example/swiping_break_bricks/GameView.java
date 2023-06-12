@@ -227,10 +227,11 @@ public class GameView extends View {
                 ballIsMoving = false;
                 ballPosition.set(screenWidth / 2.0f, screenHeight * 3.0f / 4.0f); // 공의 위치를 대기 위치로
 
-                // 새로운 라인의 벽돌 생성
-                brickGenerator.generateNewRow();
                 // 기존 벽돌들을 아래로 이동
                 brickGenerator.moveBricksDown(1);
+                // 새로운 라인의 벽돌 생성
+                brickGenerator.generateNewRow();
+
 
                 // 화면 밖으로 벗어난 벽돌 제거
                 for (int i = bricks.size() - 1; i >= 0; i--) {

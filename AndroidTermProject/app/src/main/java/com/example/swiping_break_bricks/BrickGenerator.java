@@ -14,8 +14,8 @@ public class BrickGenerator {
     public BrickGenerator(int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.brickWidth = screenWidth / 10;
-        this.brickHeight = screenHeight / 20;
+        this.brickWidth = screenWidth / 5;
+        this.brickHeight = screenHeight / 10;
         this.bricks = new ArrayList<>();
         this.random = new Random();
     }
