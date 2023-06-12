@@ -10,14 +10,13 @@ import java.util.Random;
 public class Item {
     private RectF rect;
     private Bitmap bitmap;
-    private float speed;
+
     private boolean eaten = false;
     private boolean destroyed = false;
 
-    public Item(RectF rect, Bitmap bitmap, float speed) {
+    public Item(RectF rect, Bitmap bitmap) {
         this.rect = rect;
         this.bitmap = bitmap;
-        this.speed = speed;
         this.eaten = false;
     }
 

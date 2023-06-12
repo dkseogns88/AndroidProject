@@ -26,12 +26,11 @@ public class ItemManager {
     //아이템생성
     public void createItems(int maxItems, Bitmap bitmap) {
         Random random = new Random();
-        float speed = screenHeight / 100.0f;
         for (int i = 0; i < maxItems; i++) {
             float left = random.nextInt(screenWidth - bitmap.getWidth());
             float top = random.nextInt((int) (ballY - brickHeight - bitmap.getHeight()));
             RectF rect = new RectF(left, top, left + bitmap.getWidth(), top + bitmap.getHeight());
-            items.add(new Item(rect, bitmap, speed));
+            items.add(new Item(rect, bitmap));
         }
     }
 
