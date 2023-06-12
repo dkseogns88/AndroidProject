@@ -41,6 +41,7 @@ public class BrickGenerator {
         }
     }
 
+    // 기존의 벽돌을 한줄내림
     public void moveBricksDown(int rows) {
         for (Brick brick : bricks) {
             brick.rect.top += brickHeight * rows;
