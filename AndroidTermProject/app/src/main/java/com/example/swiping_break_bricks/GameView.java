@@ -53,6 +53,7 @@ public class GameView extends View {
     public GameView(Context context) {
         super(context);
 
+
         //화면크기
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -151,6 +152,7 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        int currentStage = 1;
         // 아이템 생성
         int maxItems = 5; // 최대 아이템 개수
         Bitmap itemBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bluejam);
@@ -218,6 +220,7 @@ public class GameView extends View {
             // 새로운 라인의 벽돌 생성
             brickGenerator.generateNewRow();
 
+
             // 화면 밖으로 벗어난 벽돌 제거
             for (int j = bricks.size() - 1; j >= 0; j--) {
                 if (bricks.get(j).rect.top >= screenHeight) {
@@ -235,9 +238,11 @@ public class GameView extends View {
             itemManager.createItems(3, itemBitmap);
 
 
+
             // 모든 공의 위치를 초기 위치로 설정
             for (PointF position : ballPositions) {
                 position.set(screenWidth / 2.0f, screenHeight * 3.0f / 4.0f);
+                currentStage++;
             }
 
         }
@@ -263,6 +268,12 @@ public class GameView extends View {
         float textX = canvas.getWidth() - paint.measureText(itemCountText) - 16; // 텍스트를 오른쪽 아래에 위치시키기 위한 X 좌표 계산
         float textY = canvas.getHeight() - 16; // 텍스트를 오른쪽 아래에 위치시키기 위한 Y 좌표 계산
         canvas.drawText(itemCountText, textX, textY, paint);
+
+
+        String stageText = "Stage: " + currentStage;
+        float stagetextX = 30; // 텍스트를 왼쪽 아래에 위치시키기 위한 X 좌표 계산
+        float stagetextY = canvas.getHeight() - 16; // 텍스트를 왼쪽 아래에 위치시키기 위한 Y 좌표 계산
+        canvas.drawText(stageText, stagetextX, stagetextY, paint);
 
         invalidate();
     }
