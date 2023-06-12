@@ -35,6 +35,7 @@ class Brick {
 
 
 public class GameView extends View {
+    private BrickGenerator brickGenerator;
     public static Resources res;
     private Paint paint;
     private Bitmap ballBitmap;
@@ -78,17 +79,14 @@ public class GameView extends View {
         ballPosition = new PointF(screenWidth / 2.0f, screenHeight * 3.0f / 4.0f);
         ballVelocity = new PointF(0, 0);
 
-        //벽돌
-        bricks = new ArrayList<Brick>();
-        int brickWidth = screenWidth / 6;  //한줄의 벽돌의개수
-        int brickHeight = screenHeight / 10;
-        Random random = new Random();
-        for (int i = 0; i < 6; i++) {
-            RectF brickRect = new RectF(i * brickWidth, 0, (i + 1) * brickWidth, brickHeight);
-            int health = random.nextInt(10) + 1;
-            bricks.add(new Brick(brickRect, health));
-        }
+        // 벽돌 생성
+        brickGenerator = new BrickGenerator(screenWidth, screenHeight);
+        brickGenerator.generateBricks(6);
+        bricks = brickGenerator.getBricks();
 
+
+        // 첫 번째 벽돌의 높이를 가져옵니다.
+        float brickHeight = bricks.get(0).rect.height();
 
         //드래그 화살표
         arrowPaint = new Paint();
